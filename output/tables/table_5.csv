@@ -1,0 +1,8 @@
+itemsets,sup,Δ_fpr,t_fp
+"gain=0, status=Married, occup=Prof, race=White",0.05,0.469,25.8
+"gain=0, loss=0, status=Married, occup=Prof",0.05,0.462,26.6
+"loss=0, status=Married, occup=Prof, race=White",0.06,0.458,25.3
+itemsets,sup,Δ_fnr,t_fn
+"age≤28, gain=0, hoursXW≤40, status=Unmarried",0.17,0.61,21.8
+"gain=0, loss=0, edu=HS, hoursXW≤40, status=Unmarried",0.14,0.61,28.2
+"gain=0, loss=0, status=Unmarried, relation=Own-child",0.12,0.61,18.9

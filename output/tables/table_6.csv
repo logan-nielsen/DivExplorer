@@ -1,0 +1,4 @@
+itemsets,sup,Δ_fpr,t_fp
+"status=Married, occup=Prof",0.07,0.434,26.1
+"occup=Prof, relation=Husband",0.06,0.423,23.4
+"edu=Bachelors, status=Married",0.09,0.413,29.0

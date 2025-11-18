@@ -1,0 +1,8 @@
+I,corr. item,$Δ_{FPR}(I)$,$Δ_{FPR}(I \cup α)$,c_f,t_corr
+"race=Afr-Am, sex=Male",#prior=0,0.062,0.009,0.053,2.8
+race=Afr-Am,#prior=0,0.051,-0.001,0.051,3.4
+"stay<week, #prior=0",race=Afr-Am,-0.044,-0.003,0.041,3.1
+I,corr. item,$Δ_{FNR}(I)$,$Δ_{FNR}(I \cup α)$,c_f,t_corr
+"charge=F, race=Afr-Am, sex=Male","#prior=[1,3]",-0.123,-0.011,0.112,3.8
+"charge=F, race=Afr-Am","#prior=[1,3]",-0.113,0.004,0.109,4.3
+"race=Afr-Am, sex=Male",charge=M,-0.09,-0.001,0.089,3.3
