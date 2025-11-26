@@ -1,3 +1,12 @@
+
+# CS6110 Final
+
+## Dataset
+Added 'students' dataset from Kaggle representing student exam performance:
+https://www.kaggle.com/datasets/sadiajavedd/students-academic-performance-dataset
+
+
+## 'Forked' Project:
 # Artifacts of "Looking for Trouble: Analyzing Classifier Behavior via Pattern Divergence"
 
 [![SIGMOD](https://img.shields.io/badge/SIGMOD-2021-blue.svg)](https://dl.acm.org/doi/abs/10.1145/3448016.3457284)
