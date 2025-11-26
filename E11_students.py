@@ -3,7 +3,7 @@ import os
 DATASET_DIRECTORY = os.path.join(os.path.curdir, "datasets")
 
 
-def student_performance_experiments(
+def students_experiments(
     name_output_dir="output",
     compute_results=[        
         "table_1",
@@ -59,3 +59,50 @@ def student_performance_experiments(
 
     # Student Performance dataset
     # Found on Kaggle: https://www.kaggle.com/datasets/sadiajavedd/students-academic-performance-dataset
+
+
+
+
+
+
+
+
+import argparse
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--name_output_dir",
+        default="output",
+        help="specify the name of the output folder",
+    )
+    parser.add_argument(
+        "--compute_results",
+        nargs="*",
+        type=str,
+        default=[
+            "table_1",
+            "figure_1",
+        ],
+        help='specify the figures and tables to compute, specify one or more among ["table_1", "figure_1"]',
+    )
+    parser.add_argument(
+        "--dataset_dir",
+        default=DATASET_DIRECTORY,
+        help="specify the dataset directory",
+    )
+
+    parser.add_argument(
+        "--no_show_figs",
+        action="store_false",
+        help="specify not_show_figures to vizualize the plots. The results are stored into the specified outpur dir.",
+    )
+
+    args = parser.parse_args()
+
+    students_experiments(
+        name_output_dir=args.name_output_dir,
+        compute_results=args.compute_results,
+        dataset_dir=args.dataset_dir,
+        show_figures=args.no_show_figs,
+    )
