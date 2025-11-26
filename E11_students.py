@@ -6,8 +6,8 @@ DATASET_DIRECTORY = os.path.join(os.path.curdir, "datasets")
 def students_experiments(
     name_output_dir="output",
     compute_results=[        
-        "table_1",
-        "figure_1",
+        "table_13",
+        "figure_13",
         ],
     show_figures=True,
 ):
@@ -20,7 +20,7 @@ def students_experiments(
     from divexplorer.FP_DivergenceExplorer import FP_DivergenceExplorer
     from divexplorer.FP_Divergence import FP_Divergence, abbreviateDict
 
-    from import_datasets import import_process_compas, discretize
+    from import_datasets import import_process_students, discretize
 
     from utils_print import printable
 
@@ -28,8 +28,8 @@ def students_experiments(
     mex = []
 
     supported_values = [
-        "table_1",
-        "figure_1",
+        "table_13",
+        "figure_13",
     ]
 
     for compute_result in compute_results:
@@ -55,7 +55,7 @@ def students_experiments(
         "writing score": "writing"
     }
 
-    dataset_name = "compas"
+    dataset_name = "students"
 
     # Student Performance dataset
     # Found on Kaggle: https://www.kaggle.com/datasets/sadiajavedd/students-academic-performance-dataset
@@ -81,10 +81,10 @@ if __name__ == "__main__":
         nargs="*",
         type=str,
         default=[
-            "table_1",
-            "figure_1",
+            "table_13",
+            "figure_13",
         ],
-        help='specify the figures and tables to compute, specify one or more among ["table_1", "figure_1"]',
+        help='specify the figures and tables to compute, specify one or more among ["table_13", "figure_13"]',
     )
     parser.add_argument(
         "--dataset_dir",
