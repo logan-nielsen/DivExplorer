@@ -25,6 +25,19 @@ def quantizeLOS(x):
         return ">3Months"
 
 
+def quantizeScore(x):
+    if 90 <= x < 100:
+        return "A"
+    if 80 <= x < 90:
+        return "B"
+    if 65 <= x < 80:
+        return "C"
+    if 50 <= x < 65:
+        return "D"
+    if 0 <= x < 50:
+        return "F"
+
+
 # Class label
 # df_raw[["score_text","decile_score"]].sort_values(["score_text", "decile_score"])
 
@@ -42,6 +55,54 @@ def get_decile_score_class2(x):
     else:
         return "Low"
 
+def import_process_students(discretize=False, bins=3, inputDir=DATASET_DIR):
+    """
+    Import and preprocess the StudentsPerformance dataset for DivExplorer.
+
+    - Reads StudentsPerformance.csv from `inputDir` (default: ./datasets)
+    - Creates a binary target column `class`:
+        1 if math score >= 60 (pass), 0 otherwise (fail)
+    - Optionally discretizes continuous columns using KBinsDiscretizer_continuos
+    - Returns (dt, class_map) in the same style as other import_process_* functions.
+    """
+
+    import pandas as pd
+
+    # Make sure the dataset exists in the datasets folder
+    check_dataset_availability("StudentsPerformance.csv", inputDir=inputDir)
+
+    # Load the raw data
+    dt = pd.read_csv(os.path.join(inputDir, "StudentsPerformance.csv"))
+
+    # Create binary target: pass/fail based on math score
+    # TODO: Think about better classification for this. 
+    # Potentially a combination of math, reading, writing scores. 
+    dt["class"] = (dt["math score"] >= 60).astype(int)
+
+    # Cast categorical columns to object
+    dt["gender"] = dt["gender"].astype("object")
+    dt["race/ethnicity"] = dt["race/ethnicity"].astype("object")
+    dt["parental level of education"] = dt["parental level of education"].astype("object")
+    dt["lunch"] = dt["lunch"].astype("object")
+    dt["test preparation course"] = dt["test preparation course"].astype("object")
+
+    # Ensure the score columns are numeric
+    dt["math score"] = dt["math score"].astype("int")
+    dt["reading score"] = dt["reading score"].astype("int")
+    dt["writing score"] = dt["writing score"].astype("int")
+
+    # Optional: discretize continuous columns into bins for pattern mining
+    if discretize:
+        dt["math score"] = dt["math score"].apply(lambda x: quantizeScore(x))
+        dt["reading score"] = dt["reading score"].apply(lambda x: quantizeScore(x))
+        dt["writing score"] = dt["writing score"].apply(lambda x: quantizeScore(x))
+        # This will bin non-object columns (scores) into categorical intervals
+        dt = KBinsDiscretizer_continuos(dt, bins=bins)
+
+    # Map of negative / positive class values
+    class_map = {"N": 0, "P": 1}
+
+    return dt, class_map
 
 # https://www.kaggle.com/tentotheminus9/what-causes-heart-disease-explaining-the-model
 def import_process_heart(discretize=False, bins=3, inputDir=DATASET_DIR):
