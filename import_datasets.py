@@ -68,16 +68,9 @@ def import_process_students(discretize=False, bins=3, inputDir=DATASET_DIR):
 
     import pandas as pd
 
-    # Make sure the dataset exists in the datasets folder
     check_dataset_availability("StudentsPerformance.csv", inputDir=inputDir)
 
-    # Load the raw data
     dt = pd.read_csv(os.path.join(inputDir, "StudentsPerformance.csv"))
-
-    # Create binary target: pass/fail based on math score
-    # TODO: Think about better classification for this. 
-    # Potentially a combination of math, reading, writing scores. 
-    dt["class"] = (dt["math score"] >= 60).astype(int)
 
     # Cast categorical columns to object
     dt["gender"] = dt["gender"].astype("object")
@@ -91,12 +84,22 @@ def import_process_students(discretize=False, bins=3, inputDir=DATASET_DIR):
     dt["reading score"] = dt["reading score"].astype("int")
     dt["writing score"] = dt["writing score"].astype("int")
 
-    # Optional: discretize continuous columns into bins for pattern mining
+    dt["avg_score"] = (
+        dt["math score"] + dt["reading score"] + dt["writing score"]
+    ) / 3.0
+
+    # Use the median to get a roughly balanced split between 0 and 1
+    avg_threshold = dt["avg_score"].median()
+
+    # class = 1 if average >= median, else 0
+    dt["class"] = (dt["avg_score"] >= avg_threshold).astype(int)
+
+    dt.drop(columns=["avg_score"], inplace=True)
+
     if discretize:
         dt["math score"] = dt["math score"].apply(lambda x: quantizeScore(x))
         dt["reading score"] = dt["reading score"].apply(lambda x: quantizeScore(x))
         dt["writing score"] = dt["writing score"].apply(lambda x: quantizeScore(x))
-        # This will bin non-object columns (scores) into categorical intervals
         dt = KBinsDiscretizer_continuos(dt, bins=bins)
 
     # Map of negative / positive class values
