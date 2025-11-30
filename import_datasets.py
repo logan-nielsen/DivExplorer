@@ -60,10 +60,9 @@ def import_process_students(discretize=False, bins=3, inputDir=DATASET_DIR):
     Import and preprocess the StudentsPerformance dataset for DivExplorer.
 
     - Reads StudentsPerformance.csv from `inputDir` (default: ./datasets)
-    - Creates a binary target column `class`:
-        1 if math score >= 60 (pass), 0 otherwise (fail)
+    - Creates a binary target column `class`
     - Optionally discretizes continuous columns using KBinsDiscretizer_continuos
-    - Returns (dt, class_map) in the same style as other import_process_* functions.
+    - Returns (dt, class_map) 
     """
 
     import pandas as pd
