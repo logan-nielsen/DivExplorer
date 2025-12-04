@@ -28,6 +28,7 @@ def students_experiments(
         "students_figure_1",
         "students_table_2",
         "students_figure_2",
+        "students_figure_3",
     ],
     dataset_dir=DATASET_DIRECTORY,
     show_figures=True,
@@ -46,6 +47,7 @@ def students_experiments(
          - students_figure_1     : bar plot of top-k d_fpr
          - students_table_2      : top corrective items for FPR and FNR
          - students_figure_2     : Shapley breakdown of most FPR-divergent pattern
+         - students_figure_3     : Comparison of computed vs approximate Shapley Values of most FPR-divergent pattern
     """
 
     # ------------------------------------------------------------------
@@ -56,6 +58,7 @@ def students_experiments(
         "students_figure_1",
         "students_table_2",
         "students_figure_2",
+        "students_figure_3",
     ]
 
     invalid = [cr for cr in compute_results if cr not in supported_values]
@@ -380,6 +383,55 @@ def students_experiments(
         except Exception as e:
             print(f"Could not generate students_figure_2: {e}")
 
+    # ------------------------------------------------------------------
+    # 9. students_figure_3 – Computed VS Approximated Shapley Values for most FPR-divergent pattern
+    # ------------------------------------------------------------------
+    if "students_figure_3" in compute_results:
+        fp_divergence_fpr = FP_Divergence(FP_fm, "d_fpr")
+
+        # most FPR-divergent pattern
+        top_itemset = list(
+            fp_divergence_fpr.getDivergenceTopK(K=1, th_redundancy=0).keys()
+        )[0]
+
+        shap_values = fp_divergence_fpr.computeShapleyValue(top_itemset)
+        shap_values = abbreviateDict(shap_values, abbreviations)
+
+        shap_values_approx = fp_divergence_fpr.computeShapleyValue(top_itemset, approximate=True)
+        shap_values_approx = abbreviateDict(shap_values_approx, abbreviations)
+
+        output_file_name = os.path.join(figures_dir, "students_figure_3_shapley.pdf")
+
+        print("-----------------------------------------------------------------------")
+        print(f"Top FPR-divergent pattern: {top_itemset}")
+        print("Computed Shapley contributions:", shap_values)
+        print("Approximate Shapley contributions:", shap_values_approx)
+
+        try:
+            import matplotlib.pyplot as plt
+
+            keys = list(shap_values_approx.keys())
+            vals = list(shap_values_approx.values())
+
+            fig, ax = plt.subplots(figsize=(6, 3))
+            ax.barh(range(len(keys)), vals)
+            ax.set_yticks(range(len(keys)))
+            ax.set_yticklabels(keys)
+            ax.set_xlabel("Shapley contribution to d_fpr")
+            ax.set_title(
+                "students_figure_3: Approximate Shapley contributions for most FPR-divergent pattern"
+            )
+            fig.tight_layout()
+            fig.savefig(output_file_name, bbox_inches="tight")
+            if show_figures:
+                plt.show()
+            else:
+                plt.close(fig)
+
+            print(f"Saved students_figure_3 to: {output_file_name}")
+        except Exception as e:
+            print(f"Could not generate students_figure_3: {e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -397,11 +449,13 @@ if __name__ == "__main__":
             "students_figure_1",
             "students_table_2",
             "students_figure_2",
+            "students_figure_3"
         ],
         help=(
             "specify the figures and tables to compute, choose one or more among "
             '["students_table_1", "students_figure_1", '
-            '"students_table_2", "students_figure_2"]'
+            '"students_table_2", "students_figure_2", '
+            '"students_figure_3"]'
         ),
     )
     parser.add_argument(

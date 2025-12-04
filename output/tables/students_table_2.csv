@@ -1,0 +1,8 @@
+I,corr. item,$Δ_{FPR}(I)$,$Δ_{FPR}(I \cup α)$,c_f,t_corr
+"lunch=1, test_prep=0",parent_ed=5,0.359,0.037,0.322,2.6
+"lunch=1, parent_ed=0",gender=0,0.31,0.057,0.252,2.2
+"lunch=0, test_prep=1",race=3,-0.215,0.004,0.211,3.0
+I,corr. item,$Δ_{FNR}(I)$,$Δ_{FNR}(I \cup α)$,c_f,t_corr
+parent_ed=2,test_prep=0,0.308,-0.038,0.269,3.4
+"lunch=0, test_prep=1",race=3,0.298,-0.11,0.188,3.8
+"gender=0, test_prep=0",lunch=0,-0.162,-0.002,0.16,2.3
