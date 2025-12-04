@@ -27,7 +27,14 @@ def compute_sh_subset_item_i(item_i, subset_i, powerset_subset_i, item_score):
     )
 
 
-def shapley_subset(subset_i, item_score):
+def shapley_subset(subset_i, item_score, approximate=False):
+    if approximate:
+        return approximate_shapley_subset(subset_i, item_score)
+    else:
+        return compute_shapley_subset(subset_i, item_score)
+
+
+def compute_shapley_subset(subset_i, item_score):
     powerset_subset_i = powerset(subset_i)
     item_sh_sub = {}
     for item_i in [frozenset([i]) for i in subset_i]:
@@ -36,41 +43,48 @@ def shapley_subset(subset_i, item_score):
         )
     return item_sh_sub
 
-# import random
-# def approx_shapley_subset(subset_i, item_score, num_samples=500, seed=None):
-#     if seed is not None:
-#         random.seed(seed)
 
-#     # Convert to list to preserve order for shuffling
-#     items = list(subset_i)
-#     n = len(items)
+def approximate_shapley_subset(subset_i, item_score, n_samples=1000):
+    """
+    Approximate Shapley values for every item in subset_i using Monte Carlo sampling.
 
-#     # Helper to get v(S) = value of subset S
-#     def v(S):
-#         S = frozenset(S)
-#         return item_score.get(len(S), {}).get(S, 0.0)
+    Parameters
+    ----------
+    subset_i : iterable
+        Items in the subset.
+    item_score : dict
+        Mapping size -> {frozenset: score}.
+    n_samples : int
+        Number of random permutations to sample for the approximation.
 
-#     # Initialize shapley accumulator
-#     shapley_values = {frozenset([i]): 0.0 for i in items}
+    Returns
+    -------
+    dict
+        {frozenset({i}): approximated Shapley value}
+    """
+    from random import shuffle
 
-#     # Monte Carlo sampling of random orderings
-#     for _ in range(num_samples):
-#         ordering = items.copy()
-#         random.shuffle(ordering)
-#         prefix = frozenset()
-#         for i in ordering:
-#             # Compute marginal contribution of adding item i to current prefix
-#             v_with = v(prefix | {i})
-#             v_without = v(prefix)
-#             shapley_values[frozenset([i])] += (v_with - v_without)
-#             # Update prefix for next step
-#             prefix = prefix | {i}
+    subset_i = list(subset_i)
+    item_sh = {frozenset([i]): 0.0 for i in subset_i}
 
-#     # Average over all samples
-#     for k in shapley_values:
-#         shapley_values[k] /= num_samples
+    for _ in range(n_samples):
+        perm = subset_i.copy()
+        shuffle(perm)
+        seen = frozenset()
+        for item in perm:
+            current = seen | frozenset([item])
+            # compute marginal contribution: v(S ∪ {i}) − v(S)
+            v_current = item_score[len(current)][current]
+            v_seen = item_score[len(seen)][seen]
+            item_sh[frozenset([item])] += (v_current - v_seen)
+            seen = current
 
-#     return shapley_values
+    # average over all sampled permutations
+    for item in item_sh:
+        item_sh[item] /= n_samples
+
+    return item_sh
+
 
 
 from itertools import chain, combinations
@@ -96,30 +110,27 @@ def powerset(iterable):
 """
 
 
-# def computeGlobalMeanShapleyValue_AllSubsets(item_score):
-#     itemsets_l1 = list(item_score[1].keys())
-#     item_sh_sub = {}
-#     for item_i in itemsets_l1:
-#         item_i_superset = [
-#             v2 for i, v in item_score.items() for v2 in v if item_i.issubset(v2)
-#         ]
-#         deltas_item_i = {}
-#         for item in item_i_superset:
-#             S = item - item_i
-#             deltas_item_i[item] = item_score[len(item)][item] - item_score[len(S)][S]
-#         item_sh_sub[item_i] = sum(
-#             [
-#                 weight_delta_score(len(itemsets_l1), len(k) - 1) * v
-#                 for k, v in deltas_item_i.items()
-#             ]
-#         )
-#     return item_sh_sub
+def computeGlobalMeanShapleyValue_AllSubsets(item_score):
+    itemsets_l1 = list(item_score[1].keys())
+    item_sh_sub = {}
+    for item_i in itemsets_l1:
+        item_i_superset = [
+            v2 for i, v in item_score.items() for v2 in v if item_i.issubset(v2)
+        ]
+        deltas_item_i = {}
+        for item in item_i_superset:
+            S = item - item_i
+            deltas_item_i[item] = item_score[len(item)][item] - item_score[len(S)][S]
+        item_sh_sub[item_i] = sum(
+            [
+                weight_delta_score(len(itemsets_l1), len(k) - 1) * v
+                for k, v in deltas_item_i.items()
+            ]
+        )
+    return item_sh_sub
 
-###################################################################################################
-# GLOBAL MEAN SHAPLEY VALUE USING MONTE CARLO (DROPS IN FOR OPTION B)
-###################################################################################################
 
-def computeGlobalMeanShapleyValue_AllSubsets(item_score, K=5000, rng=None):
+def approximateGlobalMeanShapleyValue_AllSubsets(item_score, K=5000, rng=None):
     """
     Approximate global Shapley values for all single-item sets using Monte Carlo
     permutation sampling across the full item universe.

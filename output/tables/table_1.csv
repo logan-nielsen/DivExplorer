@@ -1,6 +1,6 @@
 itemsets,metric
 "frozenset({'age_cat=25 - 45', 'race=African-American', 'priors_count=>3', 'sex=Male'})",d_fpr=0.308
-"frozenset({'age_cat=Greater than 45', 'race=Caucasian'})",d_fnr=0.929
+"frozenset({'race=Caucasian', 'age_cat=Greater than 45'})",d_fnr=0.929
 "frozenset({'race=African-American', 'sex=Male'})",d_fpr=0.150
 "frozenset({'race=African-American', 'priors_count=>3', 'sex=Male'})",d_fpr=0.267
-"frozenset({'priors_count=0', 'race=African-American', 'sex=Male'})",d_fpr=0.097
+"frozenset({'race=African-American', 'priors_count=0', 'sex=Male'})",d_fpr=0.097

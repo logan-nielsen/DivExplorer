@@ -558,8 +558,8 @@ class FP_Divergence:
         }
         return getLenDictionaries(topK) if lenFormat else topK
 
-    def computeShapleyValue(self, itemset):
-        return shapley_subset(itemset, self.itemset_divergence)
+    def computeShapleyValue(self, itemset, approximate=False):
+        return shapley_subset(itemset, self.itemset_divergence, approximate)
 
     def plotShapleyValue(
         self,
@@ -578,6 +578,7 @@ class FP_Divergence:
         abbreviations={},
         xlabel=False,
         show_figure=True,
+        approximate=False,
     ):
         import matplotlib.pyplot as plt
 
@@ -588,7 +589,7 @@ class FP_Divergence:
             print("Error")
             return -1
         if shapley_values is None and itemset:
-            shapley_values = self.computeShapleyValue(itemset)
+            shapley_values = self.computeShapleyValue(itemset, approximate)
         # plt.gcf().set_size_inches(20, 10)
         if abbreviations:
             shapley_values = abbreviateDict(shapley_values, abbreviations)
@@ -634,7 +635,7 @@ class FP_Divergence:
             plt.show()
             plt.close()
 
-    def computeGlobalShapleyValue(self):
+    def computeGlobalShapleyValue(self, approximate = False):
         # TODO square
         scores_l = self.getFItemsetsDivergence()
         items = [list(i)[0] for i in self.itemset_divergence[1].keys()]
@@ -645,7 +646,11 @@ class FP_Divergence:
         global_shapley = {}
         for i in items:
             I = frozenset([i])
-            global_shapley[I] = approximateShapleyItemset(I, scores_l, attributes, card_map)
+
+            if approximate:
+                global_shapley[I] = approximateShapleyItemset(I, scores_l, attributes, card_map)
+            else:
+                global_shapley[I] = computeShapleyItemset(I, scores_l, attributes, card_map)
 
         self.global_shapley = global_shapley
         return self.global_shapley
