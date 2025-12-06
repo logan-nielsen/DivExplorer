@@ -44,46 +44,36 @@ def compute_shapley_subset(subset_i, item_score):
     return item_sh_sub
 
 
-def approximate_shapley_subset(subset_i, item_score, n_samples=1000):
-    """
-    Approximate Shapley values for every item in subset_i using Monte Carlo sampling.
+import numpy as np
+from collections import defaultdict
 
-    Parameters
-    ----------
-    subset_i : iterable
-        Items in the subset.
-    item_score : dict
-        Mapping size -> {frozenset: score}.
-    n_samples : int
-        Number of random permutations to sample for the approximation.
-
-    Returns
-    -------
-    dict
-        {frozenset({i}): approximated Shapley value}
-    """
-    from random import shuffle
-
+def approximate_shapley_subset(subset_i, item_score, n_samples=1000, seed=7):
     subset_i = list(subset_i)
-    item_sh = {frozenset([i]): 0.0 for i in subset_i}
+    rng = np.random.RandomState(seed)  # older NumPy-compatible random generator
+
+    # Precompute keys for each singleton item
+    singleton_keys = {i: frozenset([i]) for i in subset_i}
+    item_sh = defaultdict(float)
 
     for _ in range(n_samples):
         perm = subset_i.copy()
-        shuffle(perm)
+        rng.shuffle(perm)  # in-place shuffle
         seen = frozenset()
+        v_seen = item_score[0][frozenset()]  # assuming empty set is in item_score
+
         for item in perm:
-            current = seen | frozenset([item])
-            # compute marginal contribution: v(S ∪ {i}) − v(S)
+            current = seen | singleton_keys[item]
             v_current = item_score[len(current)][current]
-            v_seen = item_score[len(seen)][seen]
-            item_sh[frozenset([item])] += (v_current - v_seen)
+            item_sh[singleton_keys[item]] += (v_current - v_seen)
             seen = current
+            v_seen = v_current  # reuse previous value
 
-    # average over all sampled permutations
-    for item in item_sh:
-        item_sh[item] /= n_samples
+    # average over samples
+    for k in item_sh:
+        item_sh[k] /= n_samples
 
-    return item_sh
+    return dict(item_sh)
+
 
 
 
