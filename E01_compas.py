@@ -605,8 +605,6 @@ def compas_experiments(
             nameFig=output_file_name,
             show_figure=show_figures,
             sizeFig=(2, 1.5),
-            # approximate=True,
-            # approximate=True,
         )
 
         caption_str = (
@@ -623,6 +621,7 @@ def compas_experiments(
         output_file_name = os.path.join(outputdir, "figure_5")
 
         # Compute the global Shapley value for the FPeGlobalShapleyValue()
+        global_shapley_fpr = fp_divergence_fpr.computeGlobalShapleyValue()
 
         print("-----------------------------------------------------------------------")
 
