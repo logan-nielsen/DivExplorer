@@ -5,6 +5,11 @@
 Added 'students' dataset from Kaggle representing student exam performance:
 https://www.kaggle.com/datasets/sadiajavedd/students-academic-performance-dataset
 
+## How to Run Project Code
+Steps to run original project features are all the same. To run features added for this final project:
+1. Install dependencies in requirements.txt file
+2. Run E11_students.py
+3. Run E12_artificial_teams.py
 
 ## 'Forked' Project:
 # Artifacts of "Looking for Trouble: Analyzing Classifier Behavior via Pattern Divergence"
