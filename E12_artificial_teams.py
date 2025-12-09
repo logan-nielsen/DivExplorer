@@ -9,19 +9,15 @@ def artificial_teams_experiments(
     show_figures=True,
 ):
     """
-    Run DivExplorer experiments on the StudentsPerformance dataset.
+    Run DivExplorer experiments on an artificial player stats dataset.
 
     Pipeline:
-      1. Load and preprocess dataset (import_process_students)
-      2. Train a classifier on demographic features (via train_predict)
-      3. Discretize attributes for pattern mining (discretize)
+      1. Create artificial dataset
+      2. Discretize attributes for pattern mining
+      3. Create false negatives in dataset
       4. Extract frequent-pattern divergence (FP_DivergenceExplorer)
       5. Generate:
-         - students_table_1      : top-k patterns for FPR/FNR/error/accuracy
-         - students_figure_1     : bar plot of top-k d_fpr
-         - students_table_2      : top corrective items for FPR and FNR
-         - students_figure_2     : Shapley breakdown of most FPR-divergent pattern
-         - students_figure_3     : Comparison of computed vs approximate Shapley Values of most FPR-divergent pattern
+         - artificial_teams_figure_1.pdf
     """
 
     import numpy as np
